@@ -4,7 +4,9 @@ import shlex
 import sys
 import time
 from functools import partial
-from subprocess import Popen  # nosec - Need to allow users to specify arbitrary commands
+from subprocess import Popen, PIPE  # nosec - Need to allow users to specify arbitrary commands
+from pathlib import Path    # for reactive buttons
+from select import select   # for reactive buttons
 from typing import Dict, Optional
 
 import pkg_resources
@@ -147,7 +149,15 @@ def handle_keypress(ui, deck_id: str, key: int, state: bool) -> None:
         command = api.get_button_command(deck_id, page, key)
         if command:
             try:
-                Popen(shlex.split(command))
+                   
+                #Reactive Buttons: Open the command, change icon if the script returns an image path.
+                p = Popen(shlex.split(command), stdout=PIPE)
+                output = select([p.stdout], [], [], 0.1)[0]
+                if len(output) > 0:
+                    output = output[0].read().decode('utf-8').replace('\n', '')
+                    image_path = Path(output)
+                    if image_path.exists() and not image_path.is_dir():
+                        api.set_button_icon(deck_id, page, key, str(image_path))
             except Exception as error:
                 print(f"The command '{command}' failed: {error}")
 

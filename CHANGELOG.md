@@ -16,6 +16,12 @@ OR
 
 Change log
 ==========
+
+## 2.0.5 - 11. Aug 2022
+### Features
+- scripts can return an image path, which will be shown on the button (BETA)
+
+
 ## 2.0.4 - 29 Apr 2022
 ### Features
 - Recover from a suspend/resume cycle.

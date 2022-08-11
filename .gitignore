@@ -89,3 +89,4 @@ out
 
 # QT
 .qt_for_python/
+*.geany
